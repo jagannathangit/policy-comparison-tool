@@ -1,0 +1,8 @@
+
+.DS_Store
+.cursorindexingignore
+.specstory/
+source_html_debug.html
+output/
+results/*.xlsx
+
