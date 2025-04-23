@@ -10,7 +10,7 @@ A web policy comparison tool that automatically scrapes and compares medical pol
 - **Similarity Analysis**: Calculates similarity scores based on shared content
 - **Excel Reporting**: Generates comprehensive Excel reports with color-coding for easy identification of changes
 - **Scheduled Automation**: GitHub Actions workflow for regular automated comparisons
-- **Configurable**: Supports various input formats (XLSX, CSV, JSON) and customizable parameters
+- **Configurable**: Supported input formats (XLSX) and customizable parameters
 
 ## 📋 Requirements
 
@@ -48,7 +48,7 @@ A web policy comparison tool that automatically scrapes and compares medical pol
 Generate test data with policy URLs for comparison:
 
 ```bash
-python scripts/generate_xlsx.py --output data/policy_comparison_data.xlsx --count 100
+python3 scripts/test_data_generator.py --output data/policy_comparison_data.xlsx --count 5
 ```
 
 Parameters:
@@ -61,12 +61,12 @@ Parameters:
 Compare policies from the generated data:
 
 ```bash
-python scripts/compare_websites_multi.py --config data/policy_comparison_data.xlsx --output results/policy_comparisons.xlsx --headless --max 10
+python3 scripts/compare_urls.py --config data/policy_comparison_data.xlsx --output results/policy_comparisons.xlsx --max 2
 ```
 
 Parameters:
 
-- `--config`: Input configuration file with URL pairs (XLSX, CSV, or JSON)
+- `--config`: Input configuration file with URL pairs (XLS)
 - `--output`: Output Excel file with comparison results
 - `--headless`: Run Chrome in headless mode (no UI)
 - `--max`: Maximum number of URL pairs to process (0 = all)
