@@ -15,7 +15,6 @@ import openpyxl
 from openpyxl.styles import PatternFill, Font
 import difflib
 
-# Function definitions remain the same as in the original script...
 def get_text_from_source_url(url, headless=True):
     """
     Parser specifically for the source URL
@@ -36,8 +35,16 @@ def get_text_from_source_url(url, headless=True):
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={user_agent}')
     
-    # Initialize the driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Initialize the driver - MODIFIED FOR GITHUB ACTIONS
+    if os.environ.get('GITHUB_ACTIONS'):
+        # Running in GitHub Actions
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        # Use system Chrome
+        driver = webdriver.Chrome(options=options)
+    else:
+        # Running locally
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
     try:
         # Load the page
@@ -70,8 +77,9 @@ def get_text_from_source_url(url, headless=True):
             text = main_content.get_text(separator='\n', strip=True)
             
             # Save a debug copy of the HTML content
-            with open("source_html_debug.html", "w", encoding="utf-8") as f:
-                f.write(str(main_content))
+            if not os.environ.get('GITHUB_ACTIONS'):  # Avoid writing debug files in GitHub Actions
+                with open("source_html_debug.html", "w", encoding="utf-8") as f:
+                    f.write(str(main_content))
                 
         else:
             print(f"❌ Main content not found using 'journal-content-article'")
@@ -126,8 +134,16 @@ def get_text_from_destination_url(url, headless=True):
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={user_agent}')
     
-    # Initialize the driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Initialize the driver - MODIFIED FOR GITHUB ACTIONS
+    if os.environ.get('GITHUB_ACTIONS'):
+        # Running in GitHub Actions
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        # Use system Chrome
+        driver = webdriver.Chrome(options=options)
+    else:
+        # Running locally
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
     try:
         # Load the page
@@ -216,6 +232,9 @@ def create_comparison_excel(url_pairs_results, output_file="policy_comparisons.x
     Create an Excel file with comparisons for multiple URL pairs
     """
     print(f"Creating Excel file with comparisons for {len(url_pairs_results)} policy pairs...")
+    
+    # Create the output directory if it doesn't exist
+    os.makedirs(os.path.dirname(output_file) if os.path.dirname(output_file) else '.', exist_ok=True)
     
     # Create a new workbook or load existing one if it exists
     if os.path.exists(output_file):
@@ -516,8 +535,8 @@ def main():
         sample_data = [
             (573, "https://al-policies.exploremyplan.com/portal/web/medical-policies/-/mp-573", 
                   "https://stage-us-mypolicies.itilitihealth.us/policy/938125692074/573?lob=BCBS+AL"),
-            (574, "https://al-policies.exploremyplan.com/portal/web/medical-policies/-/mp-574", 
-                  "https://stage-us-mypolicies.itilitihealth.us/policy/938125692074/574?lob=BCBS+AL")
+            (573, "https://al-policies.exploremyplan.com/portal/web/medical-policies/-/mp-573", 
+                  "https://stage-us-mypolicies.itilitihealth.us/policy/938125692074/573?lob=BCBS+AL")
         ]
         
         for idx, (policy_num, source_url, dest_url) in enumerate(sample_data):
@@ -525,6 +544,9 @@ def main():
             ws.cell(row=row, column=1, value=policy_num)
             ws.cell(row=row, column=2, value=source_url)
             ws.cell(row=row, column=3, value=dest_url)
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(os.path.dirname(args.config) if os.path.dirname(args.config) else '.', exist_ok=True)
         
         # Save the workbook
         wb.save(args.config)
