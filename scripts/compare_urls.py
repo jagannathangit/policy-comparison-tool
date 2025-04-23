@@ -35,16 +35,15 @@ def get_text_from_source_url(url, headless=True):
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={user_agent}')
     
-    # Initialize the driver - MODIFIED FOR GITHUB ACTIONS
-    if os.environ.get('GITHUB_ACTIONS'):
-        # Running in GitHub Actions
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        # Use system Chrome
-        driver = webdriver.Chrome(options=options)
-    else:
-        # Running locally
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Initialize the driver
+    options = Options()
+    if headless:
+        options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    # Use the system ChromeDriver
+    driver = webdriver.Chrome(options=options)
     
     try:
         # Load the page
@@ -134,16 +133,15 @@ def get_text_from_destination_url(url, headless=True):
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
     options.add_argument(f'user-agent={user_agent}')
     
-    # Initialize the driver - MODIFIED FOR GITHUB ACTIONS
-    if os.environ.get('GITHUB_ACTIONS'):
-        # Running in GitHub Actions
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        # Use system Chrome
-        driver = webdriver.Chrome(options=options)
-    else:
-        # Running locally
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # Initialize the driver
+    options = Options()
+    if headless:
+        options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    # Use the system ChromeDriver
+    driver = webdriver.Chrome(options=options)
     
     try:
         # Load the page
@@ -290,6 +288,10 @@ def create_comparison_excel(url_pairs_results, output_file="policy_comparisons.x
         for line in diff:
             prefix = line[0:2]
             content = line[2:]
+            # ✅ Repeat metadata in every row
+            ws.cell(row=row, column=1, value=policy_number)
+            ws.cell(row=row, column=2, value=source_url)
+            ws.cell(row=row, column=3, value=dest_url)
             
             if prefix == '  ':  # Line in both files
                 ws.cell(row=row, column=4, value=content)
@@ -323,7 +325,7 @@ def create_comparison_excel(url_pairs_results, output_file="policy_comparisons.x
             row += 1
         
         # Update last_row for the next policy
-        last_row = row
+        last_row = row + 1
     
     # Add a legend at the end
     row = last_row + 2  # Add some space

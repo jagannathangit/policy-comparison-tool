@@ -17,7 +17,7 @@ def generate_policy_comparison_data(output_file="policy_comparison_data.xlsx", c
     ws.title = "Policy Comparison Data"
     
     # Add headers with bold formatting
-    headers = ["Policy Number", "Source URL", "Destination URL"]
+    headers = ["Source URL", "Destination URL"]
     for col, header in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col, value=header)
         cell.font = Font(bold=True)
@@ -32,14 +32,12 @@ def generate_policy_comparison_data(output_file="policy_comparison_data.xlsx", c
         dest_url = f"https://stage-us-mypolicies.itilitihealth.us/policy/938125692074/{policy_num}?lob=BCBS+AL"
         
         # Add data to the worksheet
-        ws.cell(row=row, column=1, value=policy_num)
-        ws.cell(row=row, column=2, value=source_url)
-        ws.cell(row=row, column=3, value=dest_url)
+        ws.cell(row=row, column=1, value=source_url)
+        ws.cell(row=row, column=2, value=dest_url)
     
     # Adjust column widths for better readability
-    ws.column_dimensions['A'].width = 15
+    ws.column_dimensions['A'].width = 70
     ws.column_dimensions['B'].width = 70
-    ws.column_dimensions['C'].width = 70
     
     # Save the workbook
     wb.save(output_file)
