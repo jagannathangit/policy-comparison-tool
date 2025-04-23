@@ -59,6 +59,7 @@ jobs:
           mkdir -p results
           git config --local user.email "github-actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add results/
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update policy comparison results"
-          git push
+          # Add both results and updated data files
+          git add results/ data/policy_comparison_data.xlsx
+          # Check if there are changes and commit only if needed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update policy comparison results" && git push)
