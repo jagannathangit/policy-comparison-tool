@@ -49,7 +49,7 @@ jobs:
           python scripts/compare_urls.py --config data/policy_comparison_data.xlsx --output results/policy_comparisons.xlsx --headless --max $max_policies
 
       - name: Upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: policy-comparison-results
           path: results/policy_comparisons.xlsx
